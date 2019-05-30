@@ -11,7 +11,12 @@ then
   output=$cases_path
 fi 
 
-if [ -z "$prog" ] || ! [ -f "$prog" ] || [ -z "$cases_path" ] || ! [ -d "$cases_path" ] || ! [ -d "$output" ]
+if ! [ -d "$output" ] && ! [ -f "$output" ]
+then
+  mkdir "$output"
+fi
+
+if [ -z "$prog" ] || ! [ -f "$prog" ] || [ -z "$cases_path" ] || ! [ -d "$cases_path" ] || [ -f "$output" ]
 then 
   echo ERROR
   echo Usage: 
@@ -21,7 +26,7 @@ then
   echo where:
   echo "- PROG   must be a valid executable file"
   echo "- CASES  must be a valid directory where cases are present"
-  echo "- OUTPUT if present, must also be a valid directory where output files will be saved. "
+  echo "- OUTPUT if present, must also be directory where output files will be saved. "
   echo "         If not present, CASES is used."
   exit 1
 fi 
@@ -49,7 +54,7 @@ do
 	runtime=$((end-start))
 	echo -n "$runtime"s
 	
-	if ! diff -q $fout $fexp > /dev/null
+	if ! diff -wq $fout $fexp > /dev/null
 	then 
 	  tabs 5 > /dev/null
 	  echo -ne "\tOutput not expected"
@@ -90,9 +95,9 @@ then
   fi 
   echo To see the differences, use, e.g:
   echo 
-  echo -e "  diff \"$fst_err_fexp\" \"$fst_err_fout\""
+  echo -e "  diff -w \"$fst_err_fexp\" \"$fst_err_fout\""
   echo
-  echo -e \(The line above shows the differences between the expected and your solutions\'s output, respectively, in the first error encountered\).
+  echo -e \(The line above shows the differences between the expected and your solutions\'s output, respectively, in the first error encountered. The -w option tells diff to ignore all whitespaces.\).
 fi 
 
 if [ $failed -eq 0 ] && [ -z "$fst_err_fexp" ] 
