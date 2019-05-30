@@ -9,7 +9,7 @@ For usage, type the following command in a bash shell:
 where:
 * PROG must be a valid executable file. Is the program to be tested."
 * CASES must be a valid directory where cases are present. It must contains the problems and its solutions, each of one in two separated files with the same name and `in.txt` and `out.txt` extensions, respectively."
-* OUTPUT if present, must also be a valid directory where output files will be saved. If not present, CASES is used."
+* OUTPUT if present, must also be a directory where output files will be saved. If it not exists, it will be created. If not present, CASES is used."
 
 For example, let's say we have a `cases` directory with the following four files:
 * case1.in.txt
