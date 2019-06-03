@@ -54,7 +54,7 @@ do
 	runtime=$((end-start))
 	echo -n "$runtime"s
 	
-	if ! diff -wq $fout $fexp > /dev/null
+	if ! diff -bq --strip-trailing-cr $fout $fexp > /dev/null
 	then 
 	  tabs 5 > /dev/null
 	  echo -ne "\tOutput not expected"
@@ -95,9 +95,9 @@ then
   fi 
   echo To see the differences, use, e.g:
   echo 
-  echo -e "  diff -w \"$fst_err_fexp\" \"$fst_err_fout\""
+  echo -e "  diff -b --strip-trailing-cr \"$fst_err_fexp\" \"$fst_err_fout\""
   echo
-  echo -e \(The line above shows the differences between the expected and your solutions\'s output, respectively, in the first error encountered. The -w option tells diff to ignore all whitespaces.\).
+  echo -e \(The line above shows the differences between the expected and your solutions\'s output, respectively, in the first error encountered. The -b option tells diff to ignore all space changes and --strip-trailing-cr to ignore trailing carriage return. For more information, execute \'diff --help\' or visit: https://www.gnu.org/software/diffutils/manual/html_node/diff-Options.html\).
 fi 
 
 if [ $failed -eq 0 ] && [ -z "$fst_err_fexp" ] 
