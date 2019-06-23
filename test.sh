@@ -2,9 +2,23 @@
 #Email:   s.urciuoli@gmail.com
 #License: MIT
 
-prog=$1
-cases_path=$2
-output=$3
+java=0
+argc=0
+
+for arg in "$@"
+do
+    if [ "$arg" == "--java" ]
+	then
+	  java=1
+	else 
+	  args[argc]=$arg
+	  argc=$((argc+1))
+	fi 
+done
+
+prog=${args[0]}
+cases_path=${args[1]}
+output=${args[2]}
 
 if [ -z "$output" ]
 then 
@@ -16,7 +30,7 @@ then
   mkdir "$output"
 fi
 
-if [ -z "$prog" ] || ! [ -f "$prog" ] || [ -z "$cases_path" ] || ! [ -d "$cases_path" ] || [ -f "$output" ]
+if [ -z "$prog" ] || ([ $java -eq 0 ] && ! [ -f "$prog" ]) || [ -z "$cases_path" ] || ! [ -d "$cases_path" ] || [ -f "$output" ]
 then 
   echo ERROR
   echo Usage: 
@@ -36,9 +50,11 @@ fst_err_fexp=""
 failed=0
 ok=0
 
+# echo cases: $cases_path
+
 for fin in "$cases_path"/*.in.txt
 do
-  fname=`basename -s .in.txt $fin`
+  fname=`basename -s .in.txt "$fin"`
   fexp="$cases_path/$fname".out.txt
   fout="$output/$fname".mine.txt
   
@@ -47,14 +63,25 @@ do
   
   start=`date +%s`
   
-  if $prog < $fin 1> $fout 2> /dev/null
+  if [ $java -eq 1 ]
+  then 
+    java $prog <"$fin" 1>"$fout" 2>/dev/null
+  else 
+    $prog <"$fin" 1>"$fout" 2>/dev/null
+  fi 
+  
+  # echo fname: $fname
+  # echo input: $fin
+  # echo output: $fout
+  
+  if [ $? -eq 0 ]
   then
     ok=1  
     end=`date +%s`
 	runtime=$((end-start))
 	echo -n "$runtime"s
 	
-	if ! diff -bq --strip-trailing-cr $fout $fexp > /dev/null
+	if ! diff -bq --strip-trailing-cr "$fout" "$fexp" > /dev/null
 	then 
 	  tabs 5 > /dev/null
 	  echo -ne "\tOutput not expected"
@@ -80,7 +107,12 @@ then
   then 
     echo -e In one or more cases the execution failed. This may be due the program crashed.
   else 
-    echo -e In one or more cases the execution failed. This may be due the program crashed or \"$prog\" is not a valid executable program name.
+  	if [ $java -eq 0 ]
+	then
+	  echo -e In one or more cases the execution failed. This may be due the program crashed or \"$prog\" is NOT a valid EXECUTABLE program.
+	else 
+	  echo -e In one or more cases the execution failed. This may be due the program crashed or \"$prog\" is NOT a valid JAVA class.
+	fi
   fi 
 fi 
 
