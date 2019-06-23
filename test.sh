@@ -86,7 +86,7 @@ do
 	  tabs 5 > /dev/null
 	  echo -ne "\tOutput not expected"
 	  
-	  if [ -z $fst_err_fexp ]
+	  if [ -z "$fst_err_fexp" ]
 	  then 
 	    fst_err_fexp=$fexp
 		fst_err_fout=$fout
